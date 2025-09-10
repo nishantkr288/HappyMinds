@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Peer Support Platform - Light Edition</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #6d28d9;
+            --primary-light: #ede9fe;
+            --background-color: #f3f4f6;
+            --surface-color: #ffffff;
+            --border-color: #e5e7eb;
+            --text-color: #1f2937;
+            --text-muted-color: #6b7280;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            padding: 40px 20px;
+            margin-bottom: 30px;
+            background: linear-gradient(90deg, #8b5cf6, #6d28d9);
+            color: var(--surface-color);
+            border-radius: 0 0 24px 24px;
+        }
+
+        .header h1 {
+            font-size: 2.8rem;
+            font-weight: 700;
+        }
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        /* Post Creation Card */
+        .post-creation-card {
+            background-color: var(--surface-color);
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+        }
+
+        .post-creation-card h2 {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+        }
+
+        #create-post-form input,
+        #create-post-form textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            margin-bottom: 15px;
+            background-color: #f9fafb;
+            color: var(--text-color);
+        }
+        
+        #create-post-form input:focus,
+        #create-post-form textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px var(--primary-light);
+        }
+
+        .form-footer {
+            display: flex;
+            justify-content: flex-end; /* Adjusted for removing checkbox */
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 10px 25px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: var(--surface-color);
+        }
+
+        .btn-primary:hover {
+            background-color: #5b21b6;
+        }
+
+        /* Forum Feed */
+        .forum-feed {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .post-card {
+            background-color: var(--surface-color);
+            padding: 25px;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .post-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            color: var(--text-muted-color);
+            font-size: 0.9rem;
+        }
+
+        .post-author {
+            font-weight: 600;
+            font-style: italic;
+            color: var(--text-muted-color);
+        }
+
+        .post-content h3 {
+            font-size: 1.25rem;
+            margin-bottom: 10px;
+        }
+
+        .post-footer {
+            margin-top: 20px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 15px;
+        }
+
+        .reply-btn {
+            color: var(--primary-color);
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 20px;
+            margin-top: 30px;
+            color: var(--text-muted-color);
+        }
+
+        /* Loading Spinner */
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--border-color);
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 40px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <h1>Peer Support Forum</h1>
+            <p>A safe space to share, connect, and support each other.</p>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- Post Creation Form -->
+        <div class="post-creation-card">
+            <h2>Create a New Post</h2>
+            <form id="create-post-form">
+                <input type="text" id="post-title" placeholder="Aapke post ka title..." required>
+                <textarea id="post-content" rows="4" placeholder="Apna anubhav share karein..." required></textarea>
+                <div class="form-footer">
+                    <button type="submit" class="btn btn-primary">Submit Post</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Forum Feed -->
+        <div class="forum-feed" id="forum-feed">
+            <div class="loading-spinner"></div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>This forum is moderated by trained student volunteers to ensure a safe and supportive environment.</p>
+    </footer>
+    
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    
+    <!-- Firebase Config and Main Script -->
+    <script>
+        // --- Firebase Configuration ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyBHOigOpb0KN2hUcN6DX9X4yfo_vfVggqY",
+            authDomain: "happyminds-f56fd.firebaseapp.com",
+            databaseURL: "https://happyminds-f56fd-default-rtdb.firebaseio.com",
+            projectId: "happyminds-f56fd",
+            storageBucket: "happyminds-f56fd.firebasestorage.app",
+            messagingSenderId: "1094859673873",
+            appId: "1:1094859673873:web:78d74c5dc5d4e1591f7cb0",
+            measurementId: "G-NH1Q2L44KS"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+
+        // --- Main Application Logic ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const db = firebase.firestore();
+            const auth = firebase.auth();
+
+            // DOM Elements
+            const createPostForm = document.getElementById('create-post-form');
+            const forumFeed = document.getElementById('forum-feed');
+
+            let currentUser = null;
+
+            // --- Authentication ---
+            auth.onAuthStateChanged(user => {
+                if (user) {
+                    currentUser = user;
+                    console.log("User signed in anonymously:", user.uid);
+                    fetchPosts();
+                } else {
+                    // Automatically sign in the user anonymously
+                    auth.signInAnonymously().catch(error => {
+                        console.error("Error signing in anonymously:", error);
+                        // Provide a clear alert to the user
+                        alert("Could not connect to the forum. Please check your Firebase settings and ensure 'Anonymous' sign-in is enabled in the Authentication tab.");
+                        forumFeed.innerHTML = '<p>Could not connect to the forum. Please refresh the page.</p>';
+                    });
+                }
+            });
+
+            // --- Firestore Logic ---
+
+            // 1. Create a new post
+            createPostForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+
+                if (!currentUser) {
+                    alert("Cannot post right now, please check your connection and refresh.");
+                    return;
+                }
+
+                const title = document.getElementById('post-title').value;
+                const content = document.getElementById('post-content').value;
+
+                db.collection('posts').add({
+                    title: title,
+                    content: content,
+                    authorId: currentUser.uid,
+                    authorName: "Anonymous", // All posts are now anonymous
+                    isAnonymous: true, // All posts are now anonymous
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                })
+                .then(() => {
+                    console.log("Post created successfully!");
+                    createPostForm.reset();
+                })
+                .catch(error => {
+                    console.error("Error creating post:", error);
+                });
+            });
+
+            // 2. Fetch and display all posts in real-time
+            function fetchPosts() {
+                db.collection('posts').orderBy('createdAt', 'desc')
+                    .onSnapshot(querySnapshot => {
+                        forumFeed.innerHTML = ''; // Clear the feed
+                        if (querySnapshot.empty) {
+                            forumFeed.innerHTML = '<p style="text-align: center;">Abhi tak koi post nahi hai. Pehla post share karein!</p>';
+                            return;
+                        }
+                        querySnapshot.forEach(doc => {
+                            const post = doc.data();
+                            const postId = doc.id;
+                            renderPost(postId, post);
+                        });
+                    }, error => {
+                        console.error("Error fetching posts:", error);
+                        forumFeed.innerHTML = '<p>Could not load posts. Please try again later.</p>';
+                    });
+            }
+
+            // 3. Render a single post card
+            function renderPost(postId, post) {
+                const postCard = document.createElement('div');
+                postCard.classList.add('post-card');
+
+                const createdAt = post.createdAt ? post.createdAt.toDate().toLocaleString() : 'Just now';
+                
+                postCard.innerHTML = `
+                    <div class="post-header">
+                        <span class="post-author anonymous">${post.authorName}</span>
+                        <span class="post-timestamp">${createdAt}</span>
+                    </div>
+                    <div class="post-content">
+                        <h3>${post.title}</h3>
+                        
+                        <p>${post.content.replace(/\n/g, '<br>')}</p> 
+                    </div>
+                    <div class="post-footer">
+                        <span class="reply-btn" data-post-id="${postId}">Reply</span>
+                    </div>
+                `;
+                forumFeed.appendChild(postCard);
+            }
+        });
+    </script>
+</body>
+</html>
+

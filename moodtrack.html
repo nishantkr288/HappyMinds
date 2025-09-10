@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Mood Analysis Tool - Dynamic Edition</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/phosphor-icons"></script>
+    <style>
+        :root {
+            --primary-color: #6d28d9;
+            --primary-light: #ede9fe;
+            --background-color: #f3f4f6;
+            --surface-color: #ffffff;
+            --border-color: rgba(0, 0, 0, 0.1);
+            --text-color: #1f2937;
+            --text-muted-color: #6b7280;
+            --white-color: #ffffff;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            overflow: auto;
+            position: relative;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* --- Header --- */
+        .header {
+            padding: 30px;
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+            background: linear-gradient(90deg, #8b5cf6, #6d28d9);
+        }
+        .header h1 {
+            font-size: 2.25rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+            color: var(--white-color);
+        }
+        .header p {
+            font-size: 1rem;
+            color: var(--white-color);
+            opacity: 0.9;
+        }
+
+        /* --- Main Content --- */
+        .main-content {
+            padding: 40px;
+        }
+
+        /* Step Indicator */
+        .step-indicator {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .step {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 1px solid var(--border-color);
+            background-color: #e5e7eb;
+            color: var(--text-muted-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: 600;
+            transition: all 0.4s ease;
+        }
+        .step.active {
+            background-color: var(--primary-color);
+            color: var(--white-color);
+            border-color: var(--primary-color);
+            transform: scale(1.1);
+            box-shadow: 0 0 15px rgba(109, 40, 217, 0.4);
+        }
+
+        /* Input Toggles */
+        .input-toggles {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        .toggle-btn {
+            padding: 12px 25px;
+            border: 1px solid var(--border-color);
+            background-color: var(--white-color);
+            color: var(--text-muted-color);
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+        .toggle-btn.active, .toggle-btn:hover {
+            background-color: var(--primary-color);
+            color: var(--white-color);
+            border-color: var(--primary-color);
+            box-shadow: 0 4px 15px rgba(109, 40, 217, 0.2);
+        }
+        .toggle-btn i { font-size: 1.2rem; }
+
+        /* Display Area */
+        .display-area {
+            border: 2px dashed #d1d5db;
+            border-radius: 16px;
+            min-height: 300px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+            transition: border-color 0.3s ease;
+        }
+        .display-area:hover { border-color: var(--primary-color); }
+        
+        #placeholder { text-align: center; transition: opacity 0.3s ease; }
+        #placeholder i {
+            font-size: 3rem;
+            color: var(--primary-color);
+            background-color: var(--primary-light);
+            padding: 15px;
+            border-radius: 50%;
+            margin-bottom: 15px;
+        }
+        
+        #image-preview, #webcam-feed {
+            max-width: 100%;
+            max-height: 280px;
+            border-radius: 12px;
+            display: none;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+        .action-btn {
+            padding: 12px 25px;
+            border: 1px solid var(--border-color);
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        .btn-primary { background-color: var(--primary-color); color: var(--white-color); border: none; }
+        .btn-primary:hover { transform: scale(1.05); background-color: #5b21b6; }
+        .btn-secondary { background-color: #e5e7eb; color: var(--text-muted-color); border: none; }
+        .btn-secondary:hover { background-color: #d1d5db; color: var(--text-color); }
+        
+        #upload-actions, #camera-actions { display: none; }
+        
+        /* Result Area */
+        #result-area { text-align: left; display: none; animation: fadeIn 0.5s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        #result-area h2 { font-size: 1.5rem; margin-bottom: 20px; text-align: center; }
+        #primary-mood { font-size: 1.8rem; font-weight: 700; margin-bottom: 20px; text-align: center; }
+        .emotion-bars { width: 100%; }
+        .emotion-bar { display: flex; align-items: center; margin-bottom: 10px; }
+        .emotion-bar span { width: 100px; color: var(--text-muted-color); }
+        .progress-container { flex-grow: 1; background: #e5e7eb; border-radius: 5px; }
+        .progress {
+            height: 12px;
+            background: var(--primary-color);
+            border-radius: 5px;
+            width: 0;
+            transition: width 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+        #error-text { color: #ef4444; text-align:center; }
+        
+        /* Responsive */
+        @media (max-width: 600px) {
+            .main-content { padding: 20px; }
+            .header h1 { font-size: 1.8rem; }
+            .toggle-btn { padding: 10px 15px; font-size: 0.9rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>AI Mood Analysis Tool</h1>
+            <p>Understand your emotions through facial recognition</p>
+        </header>
+        
+        <main class="main-content">
+            <div class="step-indicator">
+                <div class="step active" id="step-1">1</div>
+                <div class="step" id="step-2">2</div>
+                <div class="step" id="step-3">3</div>
+            </div>
+
+            <div class="input-toggles">
+                <button class="toggle-btn active" id="toggle-upload"><i class="ph-upload-simple"></i> Upload Photo</button>
+                <button class="toggle-btn" id="toggle-camera"><i class="ph-camera"></i> Take Selfie</button>
+            </div>
+
+            <div class="display-area">
+                <div id="placeholder">
+                    <i class="ph-cloud-arrow-up"></i>
+                    <h3>Select Your Photo</h3>
+                    <p>Choose an image that clearly shows your face</p>
+                </div>
+                <img id="image-preview" alt="Preview">
+                <video id="webcam-feed" autoplay playsinline></video>
+            </div>
+            <input type="file" id="file-input" accept="image/*" hidden>
+
+            <div class="action-buttons">
+                <div id="upload-actions">
+                    <button class="action-btn btn-primary" id="analyze-btn">Analyze Mood</button>
+                    <button class="action-btn btn-secondary" id="clear-upload-btn">Clear</button>
+                </div>
+                <div id="camera-actions">
+                    <button class="action-btn btn-primary" id="capture-btn">Capture</button>
+                    <button class="action-btn btn-secondary" id="cancel-camera-btn">Cancel</button>
+                </div>
+            </div>
+            
+            <div id="result-area">
+                 <h2>Analysis Result</h2>
+                 <p id="primary-mood"></p>
+                 <div class="emotion-bars"></div>
+                 <p id="error-text"></p>
+            </div>
+
+        </main>
+    </div>
+    
+    <script>
+        // --- Animated Background ---
+        // particlesJS is removed for light theme
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- API Credentials ---
+            const apiKey = "SAAR_tBKaONZDUM_ji_9PR0rg59yAlW3";
+            const apiSecret = "4YjjsN8OgTEKjC9XrhtihiYcWKAkSBlZ";
+            const apiUrl = "https://api-us.faceplusplus.com/facepp/v3/detect";
+
+            // --- DOM Elements ---
+            const elements = {
+                toggleUpload: document.getElementById('toggle-upload'),
+                toggleCamera: document.getElementById('toggle-camera'),
+                fileInput: document.getElementById('file-input'),
+                displayArea: document.querySelector('.display-area'),
+                placeholder: document.getElementById('placeholder'),
+                imagePreview: document.getElementById('image-preview'),
+                webcamFeed: document.getElementById('webcam-feed'),
+                uploadActions: document.getElementById('upload-actions'),
+                cameraActions: document.getElementById('camera-actions'),
+                analyzeBtn: document.getElementById('analyze-btn'),
+                clearUploadBtn: document.getElementById('clear-upload-btn'),
+                captureBtn: document.getElementById('capture-btn'),
+                cancelCameraBtn: document.getElementById('cancel-camera-btn'),
+                resultArea: document.getElementById('result-area'),
+                primaryMood: document.getElementById('primary-mood'),
+                emotionBars: document.querySelector('.emotion-bars'),
+                errorText: document.getElementById('error-text'),
+                steps: [document.getElementById('step-1'), document.getElementById('step-2'), document.getElementById('step-3')]
+            };
+            
+            let webcamStream;
+            let currentImageBlob;
+
+            // --- Event Listeners ---
+            elements.toggleUpload.addEventListener('click', () => switchMode('upload'));
+            elements.toggleCamera.addEventListener('click', () => switchMode('camera'));
+            elements.fileInput.addEventListener('change', handleFileSelect);
+            elements.analyzeBtn.addEventListener('click', () => analyzeImage(currentImageBlob));
+            elements.clearUploadBtn.addEventListener('click', resetUpload);
+            elements.captureBtn.addEventListener('click', capturePhoto);
+            elements.cancelCameraBtn.addEventListener('click', () => switchMode('upload'));
+            
+            // --- UI/Mode Management ---
+            function switchMode(mode) {
+                stopWebcam();
+                resetUpload();
+                elements.resultArea.style.display = 'none';
+                
+                if (mode === 'upload') {
+                    elements.toggleUpload.classList.add('active');
+                    elements.toggleCamera.classList.remove('active');
+                    elements.placeholder.style.display = 'block';
+                    elements.fileInput.click();
+                } else { // camera mode
+                    elements.toggleCamera.classList.add('active');
+                    elements.toggleUpload.classList.remove('active');
+                    startWebcam();
+                }
+            }
+            
+            function updateStep(stepNumber) {
+                elements.steps.forEach((step, index) => {
+                    step.classList.toggle('active', index < stepNumber);
+                });
+            }
+
+            function resetUpload() {
+                elements.imagePreview.style.display = 'none';
+                elements.imagePreview.src = '';
+                elements.uploadActions.style.display = 'none';
+                elements.placeholder.style.display = 'block';
+                currentImageBlob = null;
+                updateStep(1);
+            }
+
+            // --- Core Logic ---
+            function handleFileSelect(event) {
+                const file = event.target.files[0];
+                if (!file) return;
+                
+                elements.placeholder.style.display = 'none';
+                elements.imagePreview.src = URL.createObjectURL(file);
+                elements.imagePreview.style.display = 'block';
+                elements.uploadActions.style.display = 'flex';
+                currentImageBlob = file;
+                updateStep(2);
+            }
+
+            async function startWebcam() {
+                try {
+                    webcamStream = await navigator.mediaDevices.getUserMedia({ video: true });
+                    elements.placeholder.style.display = 'none';
+                    elements.webcamFeed.srcObject = webcamStream;
+                    elements.webcamFeed.style.display = 'block';
+                    elements.cameraActions.style.display = 'flex';
+                    updateStep(2);
+                } catch (err) {
+                    console.error("Error accessing webcam:", err);
+                    alert("Webcam access denied or not available.");
+                    switchMode('upload');
+                }
+            }
+            
+            function stopWebcam() {
+                if (webcamStream) {
+                    webcamStream.getTracks().forEach(track => track.stop());
+                }
+                elements.webcamFeed.style.display = 'none';
+                elements.cameraActions.style.display = 'none';
+            }
+            
+            function capturePhoto() {
+                const canvas = document.createElement('canvas');
+                canvas.width = elements.webcamFeed.videoWidth;
+                canvas.height = elements.webcamFeed.videoHeight;
+                canvas.getContext('2d').drawImage(elements.webcamFeed, 0, 0);
+                
+                stopWebcam();
+                
+                elements.imagePreview.src = canvas.toDataURL('image/jpeg');
+                elements.imagePreview.style.display = 'block';
+                elements.uploadActions.style.display = 'flex'; // Show analyze button
+                
+                canvas.toBlob(blob => {
+                    currentImageBlob = blob;
+                }, 'image/jpeg');
+            }
+
+            async function analyzeImage(image) {
+                if (!image) {
+                    alert("Please select an image first.");
+                    return;
+                }
+                
+                elements.resultArea.style.display = 'block';
+                elements.primaryMood.textContent = 'Analyzing...';
+                elements.emotionBars.innerHTML = '';
+                elements.errorText.textContent = '';
+                
+                const formData = new FormData();
+                formData.append('api_key', apiKey);
+                formData.append('api_secret', apiSecret);
+                formData.append('return_attributes', 'emotion');
+                formData.append('image_file', image);
+
+                try {
+                    const response = await fetch(apiUrl, { method: 'POST', body: formData });
+                    const data = await response.json();
+
+                    if (data.error_message) throw new Error(data.error_message);
+                    
+                    if (data.faces && data.faces.length > 0) {
+                        displayResults(data.faces[0].attributes.emotion);
+                        updateStep(3);
+                    } else {
+                        showError("Chehra nahi mila. Dusri photo try karein.");
+                    }
+                } catch (error) {
+                    console.error('API Error:', error);
+                    showError("Analysis failed. Please try again.");
+                }
+            }
+            
+            function showError(message) {
+                 elements.primaryMood.textContent = '';
+                 elements.errorText.textContent = message;
+            }
+
+            function displayResults(emotions) {
+                 elements.errorText.textContent = '';
+                 let primaryEmotion = 'neutral';
+                 let maxScore = 0;
+                 
+                 for (const [emotion, score] of Object.entries(emotions)) {
+                    if (score > maxScore) {
+                        maxScore = score;
+                        primaryEmotion = emotion;
+                    }
+                 }
+                 
+                 const moodEmojis = {
+                    sadness: '😔', disgust: '🤢', anger: '😠', 
+                    surprise: '😮', fear: '😨', happiness: '😊', neutral: '😐'
+                 };
+                 
+                 elements.primaryMood.innerHTML = `Your primary mood is: <strong>${primaryEmotion}</strong> ${moodEmojis[primaryEmotion] || ''}`;
+                 
+                 for (const [emotion, score] of Object.entries(emotions)) {
+                    const bar = document.createElement('div');
+                    bar.className = 'emotion-bar';
+                    bar.innerHTML = `
+                        <span>${emotion.charAt(0).toUpperCase() + emotion.slice(1)}</span>
+                        <div class="progress-container">
+                            <div class="progress" style="width: ${score.toFixed(1)}%;"></div>
+                        </div>
+                    `;
+                    elements.emotionBars.appendChild(bar);
+                 }
+            }
+        });
+    </script>
+</body>
+</html>
+
+

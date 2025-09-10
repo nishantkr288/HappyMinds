@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resource Hub - Happy Minds</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        :root {
+            --primary-glow: #00aaff;
+            --secondary-glow: #aa00ff;
+            --background-color: #111827;
+            --card-background: rgba(31, 41, 55, 0.5);
+            --card-border: rgba(255, 255, 255, 0.1);
+            --text-color: #f9fafb;
+            --text-muted-color: #9ca3af;
+            --accent-color: #38bdf8;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif; background-color: var(--background-color); color: var(--text-color);
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            min-height: 100vh; padding: 40px 20px;
+        }
+        .resource-hub-container { width: 100%; max-width: 1200px; text-align: center; }
+        .main-header { margin-bottom: 50px; animation: fadeInDown 1s ease-out; }
+        .main-title {
+            font-size: 3.5rem; font-weight: 700;
+            background: linear-gradient(90deg, var(--primary-glow), var(--secondary-glow), var(--primary-glow));
+            background-size: 200% auto; color: transparent;
+            -webkit-background-clip: text; background-clip: text;
+            animation: background-pan 5s linear infinite;
+        }
+        @keyframes background-pan { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        .main-subtitle { font-size: 1.1rem; color: var(--text-muted-color); margin-top: 10px; }
+        .hub-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 30px; }
+        .resource-card {
+            background: var(--card-background); border-radius: 20px; padding: 30px; text-align: left;
+            position: relative; overflow: hidden; border: 1px solid var(--card-border);
+            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            animation: fadeIn-card 0.5s ease-out forwards; opacity: 0;
+        }
+        .resource-card:nth-child(1) { animation-delay: 0.2s; }
+        .resource-card:nth-child(2) { animation-delay: 0.4s; }
+        .resource-card:nth-child(3) { animation-delay: 0.6s; }
+        @keyframes fadeIn-card { from { opacity: 0; transform: translateY(30px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
+        .resource-card:hover { transform: translateY(-8px); box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2); }
+        .card-content { position: relative; z-index: 1; }
+        .card-title { font-size: 1.6rem; margin-bottom: 25px; display: flex; align-items: center; gap: 12px; color: var(--text-color); }
+        .card-title .fas { font-size: 1.8rem; color: var(--accent-color); }
+        .tabs-container { display: flex; flex-direction: column; gap: 12px; }
+        .tab-btn {
+            padding: 12px 18px; border: 1px solid var(--card-border); border-radius: 10px;
+            background-color: rgba(255, 255, 255, 0.05); color: var(--text-muted-color); font-size: 1rem;
+            font-weight: 500; cursor: pointer; transition: all 0.3s ease; text-align: left; width: 100%;
+            text-decoration: none; display: block;
+        }
+        .tab-btn:hover { background-color: var(--accent-color); color: var(--background-color); border-color: var(--accent-color); transform: translateX(5px); }
+        #audio-player { width: 100%; margin-top: 20px; display: none; }
+        .modal {
+            display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.85); backdrop-filter: blur(8px);
+            justify-content: center; align-items: center;
+        }
+        .modal-content { position: relative; width: 90%; max-width: 960px; aspect-ratio: 16 / 9; }
+        #modal-video-embed { width: 100%; height: 100%; border-radius: 10px; border: none; }
+        .close-btn { position: absolute; top: -40px; right: 0; color: #fff; font-size: 40px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <div class="resource-hub-container">
+        <header class="main-header">
+            <h1 class="main-title">Resource Hub</h1>
+            <p class="main-subtitle">Your central place for helpful videos, documents, and audio.</p>
+        </header>
+
+        <div class="hub-grid">
+            <div class="resource-card">
+                <div class="card-content">
+                    <h2 class="card-title"><i class="fas fa-video"></i> Video Library</h2>
+                    <div class="tabs-container" id="video-tabs"><p>Loading videos...</p></div>
+                </div>
+            </div>
+
+            <div class="resource-card">
+                <div class="card-content">
+                    <h2 class="card-title"><i class="fas fa-file-pdf"></i> Document & Link Center</h2>
+                    <div class="tabs-container" id="pdf-tabs"><p>Loading documents...</p></div>
+                </div>
+            </div>
+
+            <div class="resource-card">
+                <div class="card-content">
+                    <h2 class="card-title"><i class="fas fa-headphones"></i> Audio Podcasts</h2>
+                    <div class="tabs-container" id="audio-tabs"><p>Loading audio...</p></div>
+                    <audio id="audio-player" controls></audio>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="video-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" id="close-modal-btn">×</span>
+            <iframe id="modal-video-embed" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyBHOigOpb0KN2hUcN6DX9X4yfo_vfVggqY",
+            authDomain: "happyminds-f56fd.firebaseapp.com",
+            projectId: "happyminds-f56fd",
+            storageBucket: "happyminds-f56fd.appspot.com",
+            messagingSenderId: "1094859673873",
+            appId: "1:1094859673873:web:78d74c5dc5d4e1591f7cb0"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        const videoTabs = document.getElementById('video-tabs');
+        const pdfTabs = document.getElementById('pdf-tabs');
+        const audioTabs = document.getElementById('audio-tabs');
+        const audioPlayer = document.getElementById('audio-player');
+        const videoModal = document.getElementById('video-modal');
+        const modalVideoEmbed = document.getElementById('modal-video-embed');
+        const closeModalBtn = document.getElementById('close-modal-btn');
+
+        function createResourceButton(resource) {
+            const isExternal = resource.type === 'pdf' || resource.type === 'link';
+            const element = isExternal ? document.createElement('a') : document.createElement('button');
+            element.className = 'tab-btn';
+            element.textContent = resource.title;
+            if (isExternal) {
+                element.href = resource.url;
+                element.target = '_blank';
+                element.rel = 'noopener noreferrer';
+            } else {
+                element.dataset.url = resource.url;
+            }
+            return element;
+        }
+
+        async function loadResources() {
+            try {
+                const snapshot = await db.collection('resources').orderBy('createdAt', 'desc').get();
+
+                videoTabs.innerHTML = '';
+                pdfTabs.innerHTML = '';
+                audioTabs.innerHTML = '';
+                
+                let videoCount = 0, pdfCount = 0, audioCount = 0;
+
+                snapshot.forEach(doc => {
+                    const resource = doc.data();
+                    const button = createResourceButton(resource);
+                    switch(resource.type) {
+                        case 'video': videoTabs.appendChild(button); videoCount++; break;
+                        case 'pdf': case 'link': pdfTabs.appendChild(button); pdfCount++; break;
+                        case 'audio': audioTabs.appendChild(button); audioCount++; break;
+                    }
+                });
+
+                if (videoCount === 0) videoTabs.innerHTML = '<p>No videos available yet.</p>';
+                if (pdfCount === 0) pdfTabs.innerHTML = '<p>No documents or links available yet.</p>';
+                if (audioCount === 0) audioTabs.innerHTML = '<p>No audio available yet.</p>';
+
+            } catch (error) {
+                console.error("Error fetching resources: ", error);
+                videoTabs.innerHTML = '<p style="color:red;">Could not load resources. Check console for errors.</p>';
+            }
+        }
+
+        function getYouTubeID(url) {
+            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+            const match = url.match(regExp);
+            return (match && match[2].length === 11) ? match[2] : null;
+        }
+
+        videoTabs.addEventListener('click', (e) => {
+            if (e.target.tagName === 'BUTTON') {
+                const videoId = getYouTubeID(e.target.dataset.url);
+                if (videoId) {
+                    modalVideoEmbed.src = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+                    videoModal.style.display = 'flex';
+                } else {
+                    alert("Invalid YouTube URL provided.");
+                }
+            }
+        });
+
+        audioTabs.addEventListener('click', (e) => {
+            if (e.target.tagName === 'BUTTON') {
+                audioPlayer.src = e.target.dataset.url;
+                audioPlayer.style.display = 'block';
+                audioPlayer.play();
+            }
+        });
+        
+        const closeModal = () => {
+            videoModal.style.display = 'none';
+            modalVideoEmbed.src = '';
+        };
+
+        closeModalBtn.addEventListener('click', closeModal);
+        videoModal.addEventListener('click', (e) => { if (e.target === videoModal) closeModal(); });
+        
+        document.addEventListener('DOMContentLoaded', loadResources);
+    </script>
+</body>
+</html>

@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emergency Help - Happy Minds</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/phosphor-icons"></script>
+    <style>
+        :root {
+            --primary-color: #6d28d9;
+            --secondary-color: #3b82f6;
+            --danger-color: #ef4444;
+            --primary-light: #ede9fe;
+            --background-start: #f5f3ff;
+            --background-end: #eff6ff;
+            --surface-color: #ffffff;
+            --border-color: #e5e7eb;
+            --text-color: #1f2937;
+            --text-muted-color: #6b7280;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        @keyframes gradient-pan {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(-45deg, var(--background-start), var(--background-end));
+            background-size: 400% 400%;
+            animation: gradient-pan 15s ease infinite;
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            animation: fadeInDown 1s ease-out;
+        }
+
+        .header h1 {
+            font-size: 2.8rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            color: var(--text-muted-color);
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Helplines Section */
+        .helplines {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 50px;
+        }
+
+        .helpline-card {
+            background-color: var(--surface-color);
+            padding: 25px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            text-align: center;
+            border: 1px solid var(--border-color);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .helpline-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+        }
+        
+        .helpline-card .icon {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+        
+        .helpline-card h3 {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+        }
+
+        .helpline-card a {
+            display: inline-block;
+            padding: 10px 25px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            background-color: var(--primary-light);
+            color: var(--primary-color);
+            transition: all 0.3s ease;
+        }
+
+        .helpline-card a:hover {
+            background-color: var(--primary-color);
+            color: var(--surface-color);
+            transform: scale(1.05);
+        }
+
+        /* Breathing Exercise Section */
+        .breathing-tool {
+            background-color: var(--surface-color);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            text-align: center;
+            margin-bottom: 50px;
+            border: 1px solid var(--border-color);
+        }
+        
+        .breathing-tool h2 {
+            margin-bottom: 30px;
+            font-size: 1.8rem;
+        }
+
+        .breather-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 200px;
+        }
+        
+        .breather-circle {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--surface-color);
+            font-size: 1.2rem;
+            font-weight: 600;
+            box-shadow: 0 10px 30px rgba(109, 40, 217, 0.3);
+        }
+        
+        .breather-circle.breathing {
+            animation: breathe 8s infinite ease-in-out;
+        }
+        
+        @keyframes breathe {
+            0%, 100% { transform: scale(0.8); }
+            50% { transform: scale(1.2); }
+        }
+
+        /* Immediate Steps Section */
+        .immediate-steps {
+            margin-bottom: 50px;
+        }
+        .immediate-steps h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 1.8rem;
+        }
+        .steps-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        .step-card {
+            background-color: var(--surface-color);
+            padding: 20px;
+            border-radius: 16px;
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            border: 1px solid var(--border-color);
+        }
+        .step-card .icon {
+            font-size: 1.8rem;
+            color: var(--primary-color);
+            margin-top: 5px;
+        }
+
+        /* Disclaimer Section */
+        .disclaimer {
+            background-color: #fef2f2;
+            color: #991b1b;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid #fecaca;
+        }
+        .disclaimer p {
+            margin: 0;
+            font-weight: 500;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header class="header">
+            <h1>Emergency Help</h1>
+            <p>If you are in a crisis or any other person may be in danger, please use these resources to get immediate help. Your safety is important.</p>
+        </header>
+
+        <section class="helplines">
+            <div class="helpline-card">
+                <i class="ph-phone-call icon"></i>
+                <h3>Campus Counselor</h3>
+                <p>Institute's own support line</p>
+                <a href="tel:91 6204914601">91 6204914601</a>
+            </div>
+            <div class="helpline-card">
+                <i class="ph-first-aid-kit icon"></i>
+                <h3>Medical Emergency</h3>
+                <p>Campus Medical Center</p>
+                <a href="tel:102">Call 102</a>
+            </div>
+            <div class="helpline-card">
+                <i class="ph-shield-check icon"></i>
+                <h3>National Helpline</h3>
+                <p>Govt. of India - KIRAN</p>
+                <a href="tel:1800-599-0019">Call 1800-599-0019</a>
+            </div>
+        </section>
+
+        <section class="breathing-tool">
+            <h2>Take a Moment to Breathe</h2>
+            <div class="breather-container">
+                <div class="breather-circle" id="breather-circle">
+                    <span id="breather-text">Get Ready...</span>
+                </div>
+            </div>
+        </section>
+        
+        <section class="immediate-steps">
+            <h2>Immediate Steps You Can Take</h2>
+            <div class="steps-grid">
+                <div class="step-card">
+                    <i class="ph-map-pin icon"></i>
+                    <div>
+                        <h4>Find a Safe Space</h4>
+                        <p>Go to a quiet and comfortable place like the library or a common room.</p>
+                    </div>
+                </div>
+                <div class="step-card">
+                    <i class="ph-users icon"></i>
+                     <div>
+                        <h4>Reach Out</h4>
+                        <p>Talk to a trusted friend, family member, or a professor.</p>
+                    </div>
+                </div>
+                <div class="step-card">
+                    <i class="ph-headphones icon"></i>
+                     <div>
+                        <h4>Engage Your Senses</h4>
+                        <p>Listen to calming music or focus on the sounds around you.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="disclaimer">
+            <p><strong>Important:</strong> If you feel you are in immediate danger to yourself or others, please contact emergency services or go to the nearest hospital.</p>
+        </section>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const circle = document.getElementById('breather-circle');
+            const text = document.getElementById('breather-text');
+            
+            const totalDuration = 8000; // 8 seconds for a full cycle
+            const holdTime = 2000; // 2 seconds
+            const breatheTime = (totalDuration - (2 * holdTime)) / 2; // 3 seconds in, 3 seconds out
+
+            function startBreathing() {
+                text.textContent = 'Breathe In';
+                circle.style.transform = 'scale(1.2)';
+
+                setTimeout(() => {
+                    text.textContent = 'Hold';
+                    setTimeout(() => {
+                        text.textContent = 'Breathe Out';
+                        circle.style.transform = 'scale(0.8)';
+                        setTimeout(() => {
+                             text.textContent = 'Hold';
+                        }, breatheTime);
+                    }, holdTime);
+                }, breatheTime);
+            }
+            
+            // Start the cycle and repeat
+            startBreathing(); // Initial call
+            setInterval(startBreathing, totalDuration);
+        });
+    </script>
+</body>
+</html>
