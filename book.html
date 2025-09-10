@@ -1,938 +1,177 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Happy Minds - Your Mental Wellness Partner</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    
+    <title>Book an Appointment - Happy Minds</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        /* --- Definiciones de Variables y Reseteo Básico --- */
         :root {
-            --primary-color: #3a8d9d;
-            --secondary-color: #f4a261;
-            --background-color: #f8f9fa;
-            --text-color: #333;
-            --light-text-color: #fff;
-            --calm-blue: #e0fbfc;
-            --card-bg: #ffffff;
-            --shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            --primary-color: #6d28d9; --primary-light: #ede9fe; --background-color: #f3f4f6;
+            --surface-color: #ffffff; --border-color: #e5e7eb; --text-color: #1f2937;
+            --text-muted-color: #6b7280; --success-color: #10b981;
         }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        html {
-            scroll-behavior: smooth;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: 'Poppins', sans-serif;
-            background-color: var(--background-color);
-            color: var(--text-color);
-            line-height: 1.6;
+            font-family: 'Inter', sans-serif; background-color: var(--background-color);
+            color: var(--text-color); line-height: 1.6; display: flex;
+            justify-content: center; align-items: center; min-height: 100vh; padding: 20px;
         }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
+        .container { width: 100%; max-width: 700px; margin: 0 auto; }
+        .appointment-card {
+            background-color: var(--surface-color); padding: 40px; border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05); border: 1px solid var(--border-color);
         }
-
-        /* --- Componentes Generales --- */
+        .header { text-align: center; margin-bottom: 30px; }
+        .header h1 { font-size: 2rem; font-weight: 700; color: var(--primary-color); margin-bottom: 10px; }
+        .header p { color: var(--text-muted-color); }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .form-group { display: flex; flex-direction: column; }
+        .form-group.full-width { grid-column: 1 / -1; }
+        .form-group label { margin-bottom: 8px; font-weight: 500; }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%; padding: 12px; border: 1px solid var(--border-color);
+            border-radius: 8px; font-family: 'Inter', sans-serif; font-size: 1rem;
+            background-color: #f9fafb; color: var(--text-color);
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none; border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px var(--primary-light);
+        }
+        .form-group textarea { resize: vertical; min-height: 100px; }
         .btn {
-            padding: 12px 24px;
-            border-radius: 30px;
-            border: none;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            font-size: 1rem;
+            display: inline-block; /* Changed for a tag */
+            text-decoration: none;  /* Added for a tag */
+            width: 100%; padding: 15px; border: none; border-radius: 8px;
+            font-size: 1rem; font-weight: 600; cursor: pointer; text-align: center;
+            transition: all 0.3s ease; margin-top: 10px;
+            background-color: var(--primary-color); color: var(--surface-color);
+        }
+        .btn:hover { background-color: #5b21b6; }
+        .btn:disabled { background-color: #a78bfa; cursor: not-allowed; }
+        #success-message, #login-prompt { text-align: center; padding: 40px; }
+        #login-prompt h2 { margin-bottom: 20px; color: var(--primary-color); }
+        #success-message h2 { margin-bottom: 15px; }
+        @media (max-width: 600px) {
+            .form-grid { grid-template-columns: 1fr; }
+            .appointment-card { padding: 20px; }
         }
-
-        .btn-primary {
-            background-color: var(--primary-color);
-            color: var(--light-text-color);
-        }
-        .btn-primary:hover {
-            background-color: #2c6a78;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-        }
-
-        .btn-secondary {
-            background-color: var(--secondary-color);
-            color: var(--light-text-color);
-        }
-        .btn-secondary:hover {
-            background-color: #d18241;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-        }
-
-        .btn-emergency {
-            background-color: #e76f51;
-            color: var(--light-text-color);
-        }
-
-        .hidden {
-            display: none !important;
-        }
-
-        /* --- Encabezado --- */
-        .main-header {
-            background-color: var(--card-bg);
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            position: fixed;
-            width: 100%;
-            top: 0;
-            z-index: 1000;
-            transition: top 0.3s;
-        }
-
-        .main-header .container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            height: 70px;
-        }
-
-        .logo {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--primary-color);
-            text-decoration: none;
-        }
-
-        .main-nav {
-            display: block; /* Visible por defecto */
-        }
-
-        .main-nav ul {
-            list-style: none;
-            display: flex;
-            margin: 0;
-        }
-
-        .main-nav ul li {
-            margin-left: 30px;
-        }
-
-        .main-nav a {
-            text-decoration: none;
-            color: var(--text-color);
-            font-weight: 600;
-            transition: color 0.3s;
-            position: relative;
-            padding-bottom: 5px;
-        }
-        .main-nav a::after {
-            content: '';
-            position: absolute;
-            width: 0;
-            height: 2px;
-            bottom: 0;
-            left: 50%;
-            background-color: var(--primary-color);
-            transition: all 0.3s ease-in-out;
-        }
-        .main-nav a:hover::after {
-            width: 100%;
-            left: 0;
-        }
-        .main-nav a:hover {
-            color: var(--primary-color);
-        }
-
-        .header-actions {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        #user-profile-icon {
-            position: relative;
-            cursor: pointer;
-        }
-        #user-profile-icon img {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            border: 2px solid var(--primary-color);
-        }
-        .dropdown-menu {
-            position: absolute;
-            top: 55px;
-            right: 0;
-            background: white;
-            box-shadow: var(--shadow);
-            border-radius: 8px;
-            padding: 10px;
-            opacity: 0;
-            visibility: hidden;
-            transform: translateY(10px);
-            transition: all 0.3s ease;
-        }
-        #user-profile-icon:hover .dropdown-menu {
-            opacity: 1;
-            visibility: visible;
-            transform: translateY(0);
-        }
-        .dropdown-menu a {
-            display: block;
-            text-decoration: none;
-            color: var(--text-color);
-            padding: 8px 15px;
-            white-space: nowrap;
-        }
-        .dropdown-menu a:hover {
-            background-color: #f1f1f1;
-        }
-
-        /* --- Sección Hero --- */
-        .hero-section {
-            margin-top: 70px;
-            height: calc(100vh - 70px);
-            background: url('https://images.unsplash.com/photo-1501785888041-af3ef285b470') no-repeat center center/cover;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            position: relative;
-            padding: 0 20px;
-        }
-
-
-
-        .hero-section::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(to top, rgba(0,0,0,0.6), rgba(0,0,0,0.2));
-        }
-
-        .hero-content {
-            z-index: 2;
-            color: var(--light-text-color);
-            animation: fadeIn 1.5s ease-in-out;
-        }
-
-        .hero-content h1 {
-            font-size: 3.8rem;
-            margin-bottom: 1rem;
-            font-weight: 700;
-        }
-
-        .hero-content p {
-            font-size: 1.3rem;
-            margin-bottom: 2rem;
-            font-weight: 300;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* --- Texto Introductorio --- */
-        .intro-text {
-            padding: 80px 0;
-            text-align: center;
-            background-color: var(--calm-blue);
-        }
-
-        .intro-text p {
-            max-width: 800px;
-            margin: 0 auto;
-            font-size: 1.2rem;
-            line-height: 1.8;
-        }
-
-        /* --- Secciones de Características --- */
-        .feature-sections {
-            padding: 80px 0;
-        }
-        .feature-sections .container {
-            display: grid;
-            /* Esta línea hace que sea responsivo automáticamente */
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 30px;
-        }
-        .feature-card {
-            background: var(--card-bg);
-            padding: 40px 30px;
-            text-align: center;
-            border-radius: 10px;
-            box-shadow: var(--shadow);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-        .feature-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-        }
-        .feature-card i {
-            font-size: 3.5rem; /* Tamaño del ícono */
-            color: var(--primary-color);
-            margin-bottom: 20px;
-        }
-        .feature-card h3 {
-            margin-bottom: 15px;
-            color: var(--primary-color);
-            font-size: 1.5rem;
-        }
-        .feature-card p {
-            font-size: 1rem;
-            margin-bottom: 25px;
-        }
-
-        /* --- Galería de Imágenes --- */
-        .image-gallery-section {
-            padding: 80px 0;
-            text-align: center;
-            background: var(--card-bg);
-            overflow: hidden;
-        }
-        .image-gallery-section h2 { margin-bottom: 40px; font-size: 2.5rem; }
-
-        .gallery-container {
-            width: 100%;
-            overflow: hidden;
-            -webkit-mask-image: linear-gradient(to right, transparent, black 20%, black 80%, transparent);
-            mask-image: linear-gradient(to right, transparent, black 20%, black 80%, transparent);
-        }
-        .gallery-wrapper {
-            display: flex;
-            width: fit-content;
-            animation: scroll-gallery 40s linear infinite;
-        }
-        .gallery-wrapper img {
-            height: 250px;
-            width: auto;
-            margin: 0 15px;
-            border-radius: 10px;
-            box-shadow: var(--shadow);
-            transition: transform 0.3s ease;
-        }
-        .gallery-wrapper:hover {
-            animation-play-state: paused;
-        }
-        .gallery-wrapper img:hover {
-            transform: scale(1.05);
-        }
-        @keyframes scroll-gallery {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-50%); }
-        }
-
-        /* --- Vista Previa de Servicios --- */
-        .services-preview {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            align-items: center;
-            background: var(--card-bg);
-        }
-        .services-image {
-            height: 500px;
-            background: url('https://images.unsplash.com/photo-1544006659-f0b21884ce1d?w=500') no-repeat center center/cover;
-        }
-        .services-content {
-            padding: 60px;
-        }
-        .services-content h2 { margin-bottom: 20px; font-size: 2.2rem; }
-        .services-content p { margin-bottom: 30px; font-size: 1.1rem; }
-
-        /* --- Sección de Reseñas --- */
-        .reviews-section {
-            padding: 80px 0;
-            text-align: center;
-            background-color: var(--calm-blue);
-            overflow: hidden;
-        }
-        .reviews-section h2 { margin-bottom: 40px; font-size: 2.5rem; }
-        .reviews-container {
-            width: 100%;
-            overflow: hidden;
-            -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
-            mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
-        }
-        .reviews-wrapper {
-            display: flex;
-            width: fit-content;
-            animation: scroll-reviews 60s linear infinite;
-        }
-        .reviews-wrapper:hover {
-            animation-play-state: paused;
-        }
-        .review-card {
-            background: var(--card-bg);
-            min-width: 350px;
-            margin: 0 15px;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: var(--shadow);
-            text-align: left;
-        }
-        .review-card .stars {
-            color: var(--secondary-color);
-            font-size: 1.2rem;
-            margin: 10px 0;
-        }
-        .review-card span {
-            font-weight: 600;
-            color: var(--primary-color);
-        }
-        @keyframes scroll-reviews {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-50%); }
-        }
-
-        /* --- Pie de Página --- */
-        .main-footer {
-            background-color: #2b3035;
-            color: #f1f1f1;
-            padding-top: 60px;
-        }
-        .main-footer .container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 30px;
-        }
-        .footer-links h4, .footer-form h4 {
-            margin-bottom: 20px;
-            color: var(--secondary-color);
-            font-size: 1.2rem;
-        }
-        .footer-links a, .footer-links p {
-            display: block;
-            color: #ccc;
-            text-decoration: none;
-            margin-bottom: 10px;
-            transition: color 0.3s, padding-left 0.3s;
-        }
-        .footer-links a:hover { color: var(--light-text-color); padding-left: 5px; }
-        .footer-form input, .footer-form textarea {
-            width: 100%;
-            padding: 12px;
-            margin-bottom: 10px;
-            border-radius: 5px;
-            border: none;
-            background: #444;
-            color: white;
-            transition: background-color 0.3s;
-        }
-        .footer-form input:focus, .footer-form textarea:focus {
-            background-color: #555;
-            outline: 1px solid var(--primary-color);
-        }
-        .footer-bottom {
-            text-align: center;
-            padding: 20px;
-            margin-top: 40px;
-            border-top: 1px solid #444;
-        }
-
-        /* --- Modal --- */
-        .modal-overlay {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: rgba(0,0,0,0.6);
-            z-index: 2000;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s ease;
-        }
-        .modal-overlay:not(.hidden) {
-            opacity: 1;
-            pointer-events: auto;
-        }
-        .modal-content {
-            background: var(--card-bg);
-            padding: 40px;
-            border-radius: 10px;
-            width: 90%;
-            max-width: 400px;
-            position: relative;
-            transform: translateY(-50px) scale(0.95);
-            transition: transform 0.3s ease, opacity 0.3s ease;
-            opacity: 0;
-        }
-        .modal-overlay:not(.hidden) .modal-content {
-            transform: translateY(0) scale(1);
-            opacity: 1;
-        }
-        .close-modal {
-            position: absolute;
-            top: 15px; right: 15px;
-            background: none;
-            border: none;
-            font-size: 1.8rem;
-            cursor: pointer;
-            color: #aaa;
-            transition: color 0.3s;
-        }
-        .close-modal:hover {
-            color: #333;
-        }
-        .modal-content h2 {
-            text-align: center;
-            margin-bottom: 25px;
-            color: var(--primary-color);
-        }
-        .modal-content form {
-            display: flex;
-            flex-direction: column;
-        }
-        .modal-content input {
-            padding: 12px;
-            margin-bottom: 15px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            font-size: 1rem;
-        }
-        .modal-content p {
-            text-align: center;
-            margin-top: 15px;
-        }
-        .modal-content a {
-            color: var(--primary-color);
-            font-weight: 600;
-            cursor: pointer;
-        }
-        .form-error {
-            color: #e74c3c;
-            text-align: center;
-            margin-bottom: 10px;
-            font-size: 0.9rem;
-            display: none;
-        }
-        
-        /* --- Diseño Responsivo --- */
-        @media (max-width: 992px) {
-            .services-preview { 
-                grid-template-columns: 1fr; 
-            }
-            .services-content { 
-                text-align: center; 
-            }
-        }
-
-        @media (max-width: 768px) {
-            .main-nav {
-                display: none; /* Ocultar menú en móviles, se puede añadir un botón de hamburguesa */
-            }
-            .hero-content h1 {
-                font-size: 2.5rem;
-            }
-            .hero-content p {
-                font-size: 1.1rem;
-            }
-            .services-image {
-                height: 300px;
-            }
-        }
-
     </style>
 </head>
 <body>
 
-    <header class="main-header">
-        <div class="container">
-            <a href="#" class="logo">Happy Minds</a>
-            <nav class="main-nav">
-                <ul>
-                    <li><a href="#home">Home</a></li>
-                    <li><a href="about.html">About</a></li>
-                    <li><a href="service.html">Services</a></li>
-                    <li><a href="resourcehub.html">Resources</a></li>
-                </ul>
-            </nav>
-            <div class="header-actions">
-                <!-- <button class="btn btn-emergency">Emergency Help</button> -->
-                 <a href="emergency.html">
-    <button class="btn btn-emergency  requires-auth">Emergency Help</button>
-</a>
-                <button class="btn btn-primary" id="login-btn">Login</button>
-                <div id="user-profile-icon" class="hidden">
-                    <img src="https://i.pravatar.cc/40" alt="User Profile">
-                    <div class="dropdown-menu">
-                        <a href="#" id="logout-btn">Logout</a>
+    <div class="container">
+        <div class="appointment-card" id="appointment-container">
+            
+            <div id="login-prompt" style="display: none;">
+                <h2>Please Login to Book an Appointment</h2>
+                <p>You must be logged in to submit a request. Please return to the homepage to log in.</p>
+                <br>
+                <a href="index.html" class="btn">Go to Homepage</a>
+            </div>
+
+            <div id="appointment-form-view">
+                <div class="header">
+                    <h1>Book an Appointment</h1>
+                    <p>Please fill out the form below to request a confidential appointment.</p>
+                </div>
+                <form id="appointment-form">
+                    <div class="form-grid">
+                        <div class="form-group"><label for="fullName">Full Name</label><input type="text" id="fullName" required></div>
+                        <div class="form-group"><label for="email">Email</label><input type="email" id="email" required></div>
+                        <div class="form-group"><label for="mobile">Mobile Number</label><input type="tel" id="mobile" required></div>
+                        <div class="form-group"><label for="gender">Gender</label><select id="gender" required><option value="" disabled selected>Select Gender</option><option value="Male">Male</option><option value="Female">Female</option></select></div>
+                        <div class="form-group"><label for="regNumber">College Registration No.</label><input type="text" id="regNumber" required></div>
+                        <div class="form-group"><label for="rollNumber">Roll Number</label><input type="text" id="rollNumber" required></div>
+                        <div class="form-group full-width"><label for="problem">What would you like to discuss?</label><textarea id="problem" required></textarea></div>
                     </div>
-                </div>
-            </div>
-        </div>
-    </header>
-
-    <main>
-        <section id="home" class="hero-section">
-            <div class="hero-content">
-                <h1>Student Wellness, Our Priority.</h1>
-                <p>A dedicated platform to help you succeed in your academic and personal life.</p>
-                <!-- <button class="btn btn-secondary requires-auth">Book an Appointment</button> -->
-                 <a href="book.html">
-    <button class="btn btn-secondary  requires-auth">Book an Appointment</button>
-</a>
-
-
-            </div>
-        </section>
-
-        <section id="about" class="intro-text">
-            <div class="container">
-                <p>Welcome to Happy Minds, a safe space dedicated to supporting students on their mental health journey. We believe that everyone deserves access to resources and help, whenever and wherever they need it.</p>
-            </div>
-        </section>
-
-        <section id="resources" class="feature-sections">
-            <div class="container">
-                <div class="feature-card">
-                    <div>
-                        <i class="fa-solid fa-robot"></i>
-                        <h3>Chatbot Assistant</h3>
-                        <p>Get instant, friendly support from our AI-powered chatbot.</p>
-                    </div>
-                    <a href="chatbot.html">
-                          <button class="btn btn-primary requires-auth">Launch Chatbot</button>
-                     </a>
-                    <!-- <button class="btn btn-primary requires-auth">Launch Chatbot</button> -->
-                </div>
-                <div class="feature-card">
-                    <div>
-                        <i class="fa-solid fa-compass"></i>
-                        <h3>Explore Resources</h3>
-                        <p>Browse articles, videos, and guides to help you understand and grow.</p>
-                    </div>
-                    <!-- <button class="btn btn-primary">Explore Now</button> -->
-                     <a href="resourcehub.html">
-                  <button class="btn btn-primary requires-auth">Explore Now</button>
-                      </a>
-
-                </div>
-                <div class="feature-card">
-                    <div>
-                        <i class="fa-solid fa-face-smile"></i>
-                        <h3>Mood Tracker</h3>
-                        <p>Log your feelings and track your emotional wellness over time.</p>
-                    </div>
-                    <!-- <button class="btn btn-primary requires-auth">Track Mood</button> -->
-                     <a href="moodtrack.html">
-                  <button class="btn btn-primary requires-auth">Explore Now</button>
-                      </a>
-                </div>
-            </div>
-        </section>
-        
-        <section class="image-gallery-section">
-            <h2>A Community of Support</h2>
-            <div class="gallery-container">
-                <div class="gallery-wrapper">
-                    <img src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=500" alt="Gallery Image 1">
-                    <img src="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=500" alt="Gallery Image 2">
-                    <img src="https://images.unsplash.com/photo-1556761175-b413da4baf72?w=500" alt="Gallery Image 3">
-                    <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=500" alt="Gallery Image 4">
-                    <!-- <img src="https://images.unsplash.com/photo-1588196749107-16545b57f125?w=500" alt="Gallery Image 5"> -->
-                    <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?w=500" alt="Gallery Image 6">
-                    <img src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=500" alt="Gallery Image 1">
-                    <img src="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=500" alt="Gallery Image 2">
-                </div>
-            </div>
-        </section>
-
-        <section id="services" class="services-preview">
-            <div class="services-image"></div>
-            <div class="services-content">
-                <h2>Professional Services Tailored for You</h2>
-                <p>From one-on-one therapy sessions to group workshops, we have a service that fits your needs.</p>
-                <!-- <button class="btn btn-secondary">Explore All Services</button> -->
-                 <!-- <button class="btn btn-secondary requires-auth" onclick="location.href='service.html'">Explore All Services</button> -->
-                <a href="service.html">
-                        <button class="btn btn-secondary requires-auth">Explore ALL Services</button>
-                 </a>
-
-            </div>
-        </section>
-
-        <section class="reviews-section">
-             <h2>What Our Users Say</h2>
-            <div class="reviews-container">
-                <div class="reviews-wrapper">
-                    <div class="review-card">"Happy Minds has been a game-changer for me."<div class="stars">★★★★★</div><span>- Alex P.</span></div>
-                    <div class="review-card">"The resources are incredibly helpful and easy to access."<div class="stars">★★★★★</div><span>- Priya K.</span></div>
-                    <div class="review-card">"I finally feel understood and supported."<div class="stars">★★★★★</div><span>- Ben S.</span></div>
-                    <div class="review-card">"A wonderful platform for student mental health."<div class="stars">★★★★★</div><span>- Sarah L.</span></div>
-                    <div class="review-card">"The mood tracker is a simple but powerful tool."<div class="stars">★★★★★</div><span>- Mike R.</span></div>
-                    <div class="review-card">"Booking an appointment was seamless and stress-free."<div class="stars">★★★★★</div><span>- Jessica T.</span></div>
-                    <div class="review-card">"I recommend this to all my friends."<div class="stars">★★★★★</div><span>- Omar F.</span></div>
-                    <div class="review-card">"Happy Minds has been a game-changer for me."<div class="stars">★★★★★</div><span>- Alex P.</span></div>
-                    <div class="review-card">"The resources are incredibly helpful and easy to access."<div class="stars">★★★★★</div><span>- Priya K.</span></div>
-                </div>
-            </div>
-        </section>
-    </main>
-    
-    <footer class="main-footer">
-        <div class="container">
-            <div class="footer-links">
-                <h4>Company</h4>
-                <a href="about.html">About</a>
-                <a href="service.html">Services</a>
-                <a href="#">Blog</a>
-            </div>
-            <div class="footer-links">
-                <h4>Support</h4>
-                <a href="emergency.html">Contact</a>
-                <a href="">Reviews</a>
-                <a href="book.html">Book an Appointment</a>
-            </div>
-            <div class="footer-links">
-                <h4>Contact Info</h4>
-                <p>+91 6204914601</p>
-                <p>Sit Sitamarhi, Gosainpur, Rasulpur, Sitamarhi - 843302, Bihar, India</p>
-            </div>
-            <div class="footer-form">
-                <h4>Send Us Feedback</h4>
-                <form id="feedback-form">
-                    <input type="text" placeholder="Your Name" required>
-                    <input type="email" placeholder="Your Email" required>
-                    <textarea placeholder="Your Message" required></textarea>
-                    <button type="submit" class="btn btn-primary">Send</button>
+                    <button type="submit" class="btn" id="submit-btn">Submit Request</button>
                 </form>
             </div>
-        </div>
-        <div class="footer-bottom">
-            <p>&copy; 2025 Happy Minds. All Rights Reserved.</p>
-        </div>
-    </footer>
+            
+            <div id="success-message" style="display: none;">
+                <h2>Thank You!</h2>
+                <p>Your appointment request has been submitted successfully. We will get back to you via email.</p>
+                <br>
+                <a href="index.html" class="btn">Back to Homepage</a>
+            </div>
 
-    <div id="auth-modal" class="modal-overlay hidden">
-        <div class="modal-content">
-            <button class="close-modal">&times;</button>
-            <div id="login-view">
-                <h2>Welcome Back</h2>
-                <form id="login-form">
-                    <p class="form-error" id="login-error"></p>
-                    <input type="email" id="login-email" placeholder="Email" required>
-                    <input type="password" id="login-password" placeholder="Password" required>
-                    <button type="submit" class="btn btn-primary">Login</button>
-                </form>
-                <p>Don't have an account? <a href="#" id="show-signup">Sign Up</a></p>
-            </div>
-            <div id="signup-view" class="hidden">
-                <h2>Create Account</h2>
-                <form id="signup-form">
-                    <p class="form-error" id="signup-error"></p>
-                    <input type="email" id="signup-email" placeholder="Email" required>
-                    <input type="password" id="signup-password" placeholder="Password (min. 6 characters)" required>
-                    <button type="submit" class="btn btn-primary">Sign Up</button>
-                </form>
-                <p>Already have an account? <a href="#" id="show-login">Log In</a></p>
-            </div>
         </div>
     </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     
-    <script type="module">
-        // --- Inicialización de Firebase ---
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
-        // abhi add hua hai
-        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
-
-        import { 
-            getAuth,
-            createUserWithEmailAndPassword, 
-            signInWithEmailAndPassword, 
-            onAuthStateChanged,
-            signOut 
-        } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
-        
-        // Configuración de Firebase proporcionada
+    <script>
         const firebaseConfig = {
-          apiKey: "AIzaSyBHOigOpb0KN2hUcN6DX9X4yfo_vfVggqY",
-          authDomain: "happyminds-f56fd.firebaseapp.com",
-          projectId: "happyminds-f56fd",
-          storageBucket: "happyminds-f56fd.appspot.com",
-          messagingSenderId: "1094859673873",
-          appId: "1:1094859673873:web:78d74c5dc5d4e1591f7cb0",
-          measurementId: "G-NH1Q2L44KS"
+            apiKey: "AIzaSyBHOigOpb0KN2hUcN6DX9X4yfo_vfVggqY",
+            authDomain: "happyminds-f56fd.firebaseapp.com",
+            projectId: "happyminds-f56fd",
+            storageBucket: "happyminds-f56fd.appspot.com",
+            messagingSenderId: "1094859673873",
+            appId: "1:1094859673873:web:78d74c5dc5d4e1591f7cb0",
+            measurementId: "G-NH1Q2L44KS"
         };
-        
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app); // <-- Is line ko add karein
 
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
 
+        const loginPromptView = document.getElementById('login-prompt');
+        const appointmentFormView = document.getElementById('appointment-form-view');
+        const successView = document.getElementById('success-message');
+        const appointmentForm = document.getElementById('appointment-form');
+        const submitBtn = document.getElementById('submit-btn');
 
-        // --- Selección de Elementos del DOM ---
-        const loginBtn = document.getElementById('login-btn');
-        const userProfileIcon = document.getElementById('user-profile-icon');
-        const logoutBtn = document.getElementById('logout-btn');
-        const modal = document.getElementById('auth-modal');
-        const closeModalBtn = document.querySelector('.close-modal');
-        const protectedElements = document.querySelectorAll('.requires-auth');
-
-        // Formularios del modal
-        const loginView = document.getElementById('login-view');
-        const signupView = document.getElementById('signup-view');
-        const showSignupLink = document.getElementById('show-signup');
-        const showLoginLink = document.getElementById('show-login');
-        const loginForm = document.getElementById('login-form');
-        const signupForm = document.getElementById('signup-form');
-        const loginError = document.getElementById('login-error');
-        const signupError = document.getElementById('signup-error');
-
-        // --- Lógica del Modal ---
-        const openModal = () => modal.classList.remove('hidden');
-        const closeModal = () => modal.classList.add('hidden');
-
-        loginBtn.addEventListener('click', openModal);
-        closeModalBtn.addEventListener('click', closeModal);
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) {
-                closeModal();
-            }
-        });
-
-        // Cambiar entre vistas de Login y Signup
-        showSignupLink.addEventListener('click', (e) => {
-            e.preventDefault();
-            loginView.classList.add('hidden');
-            signupView.classList.remove('hidden');
-        });
-
-        showLoginLink.addEventListener('click', (e) => {
-            e.preventDefault();
-            signupView.classList.add('hidden');
-            loginView.classList.remove('hidden');
-        });
-
-        // --- Lógica de Autenticación ---
-        let currentUser = null;
-
-        onAuthStateChanged(auth, (user) => {
-            currentUser = user;
+        auth.onAuthStateChanged(user => {
             if (user) {
-                loginBtn.classList.add('hidden');
-                userProfileIcon.classList.remove('hidden');
-                closeModal();
+                console.log("User is logged in:", user.uid);
+                loginPromptView.style.display = 'none';
+                appointmentFormView.style.display = 'block';
+
+                if (user.email) {
+                    document.getElementById('email').value = user.email;
+                }
             } else {
-                loginBtn.classList.remove('hidden');
-                userProfileIcon.classList.add('hidden');
+                console.log("No user is logged in.");
+                loginPromptView.style.display = 'block';
+                appointmentFormView.style.display = 'none';
             }
         });
 
-        signupForm.addEventListener('submit', (e) => {
+        appointmentForm.addEventListener('submit', (e) => {
             e.preventDefault();
-            const email = document.getElementById('signup-email').value;
-            const password = document.getElementById('signup-password').value;
-            signupError.style.display = 'none';
+            
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Submitting...';
 
-            createUserWithEmailAndPassword(auth, email, password)
+            const appointmentData = {
+                fullName: document.getElementById('fullName').value,
+                email: document.getElementById('email').value,
+                mobile: document.getElementById('mobile').value,
+                gender: document.getElementById('gender').value,
+                registrationNumber: document.getElementById('regNumber').value,
+                rollNumber: document.getElementById('rollNumber').value,
+                problem: document.getElementById('problem').value,
+                status: 'Pending',
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            };
+
+            db.collection('appointments').add(appointmentData)
+                .then((docRef) => {
+                    console.log("Appointment request saved with ID: ", docRef.id);
+                    appointmentFormView.style.display = 'none';
+                    successView.style.display = 'block';
+                })
                 .catch((error) => {
-                    signupError.textContent = error.message;
-                    signupError.style.display = 'block';
+                    console.error("Error adding document: ", error);
+                    alert("There was an error submitting your request. Please try again.");
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Submit Request';
                 });
         });
-
-        loginForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const email = document.getElementById('login-email').value;
-            const password = document.getElementById('login-password').value;
-            loginError.style.display = 'none';
-
-            signInWithEmailAndPassword(auth, email, password)
-                .catch((error) => {
-                    loginError.textContent = 'Invalid email or password.';
-                    loginError.style.display = 'block';
-                });
-        });
-
-        logoutBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            signOut(auth).catch((error) => console.error('Logout Error:', error));
-        });
-
-        // --- Lógica de Contenido Protegido ---
-        protectedElements.forEach(element => {
-            element.addEventListener('click', (e) => {
-                if (!currentUser) {
-                    e.preventDefault();
-                    openModal();
-                }
-            });
-        });
-
-        // --- Formulario de Feedback ---
-        // const feedbackForm = document.getElementById('feedback-form');
-        // feedbackForm.addEventListener('submit', (e) => {
-        //     e.preventDefault();
-        //     alert('Thank you for your feedback!');
-        //     feedbackForm.reset();
-        // });
-        // --- Formulario de Feedback ---
-// --- Feedback Form Logic (FIXED) ---
-const feedbackForm = document.getElementById('feedback-form');
-feedbackForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-
-    const nameInput = feedbackForm.querySelector('input[type="text"]');
-    const emailInput = feedbackForm.querySelector('input[type="email"]');
-    const messageInput = feedbackForm.querySelector('textarea');
-    const submitButton = feedbackForm.querySelector('button');
-
-    // Button ko disable karein aur text badlein
-    submitButton.textContent = 'Sending...';
-    submitButton.disabled = true;
-
-    try {
-        // Data ko 'feedback' collection mein save karein
-        await addDoc(collection(db, "feedback"), {
-            name: nameInput.value,
-            email: emailInput.value,
-            message: messageInput.value,
-            submittedAt: new Date()
-        });
-
-        alert('Thank you for your feedback!');
-        feedbackForm.reset();
-
-    } catch (error) {
-        console.error("Error adding document: ", error);
-        alert('Sorry, there was an error submitting your feedback. Please try again.');
-    } finally {
-        // Button ko vapas normal karein
-        submitButton.textContent = 'Send';
-        submitButton.disabled = false;
-    }
-});
-
-// admin add
-const functions = require("firebase-functions");
-const admin = require("firebase-admin");
-
-admin.initializeApp();
-
-exports.countUsers = functions.https.onCall(async (data, context) => {
-  try {
-    // Fetches up to 1000 users. For more, you'd need to handle pagination.
-    const userRecords = await admin.auth().listUsers(1000);
-    return { totalUsers: userRecords.users.length };
-  } catch (error) {
-    console.error("Error counting users:", error);
-    throw new functions.https.HttpsError("internal", "Unable to count users.");
-  }
-});
     </script>
 </body>
 </html>
